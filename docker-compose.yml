@@ -1,0 +1,48 @@
+version: '3.8'
+
+services:
+  # --- Service A: Auth (Port 5000) ---
+  service-a:
+    build: ./service_a_auth
+    ports:
+      - "5000:5000"
+    env_file:
+      - .env
+    volumes:
+      # Persist the User DB so it survives restarts
+      - user_db_data:/app
+
+  # --- Service B: Data (Port 5001) ---
+  service-b:
+    build: ./service_b_data
+    ports:
+      - "5001:5001"
+    volumes:
+      # Persist the Recipe DB
+      - recipe_db_data:/app
+
+  # --- Service C: AI (Port 5002) ---
+  service-c:
+    build: ./service_c_llm
+    ports:
+      - "5002:5002"
+    env_file:
+      - .env
+    depends_on:
+      - service-b
+
+  # --- Frontend: React (Port 5173) ---
+  frontend:
+    build: ./frontend
+    ports:
+      - "5173:5173"
+    environment:
+      - VITE_API_URL=http://localhost:5000
+    depends_on:
+      - service-a
+      - service-c
+
+# Define volumes for persistent data
+volumes:
+  user_db_data:
+  recipe_db_data:

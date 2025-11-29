@@ -1,0 +1,10 @@
+{
+    "milk": ["milk", "butter", "cheese", "cream", "yogurt", "whey", "casein", "lactose", "ghee", "custard", "gelato"],
+    "eggs": ["egg", "eggs", "mayonnaise", "meringue", "albumin", "lysozyme", "ovalbumin"],
+    "peanuts": ["peanut", "peanuts", "nut", "nuts", "peanut butter", "peanut oil"],
+    "tree nuts": ["almond", "cashew", "walnut", "pecan", "pistachio", "macadamia", "hazelnut", "pesto"],
+    "gluten": ["wheat", "barley", "rye", "malt", "flour", "bread", "pasta", "soy sauce", "soysauce", "seitan", "couscous", "bulgur", "semolina"],
+    "soy": ["soy", "tofu", "edamame", "miso", "tempeh", "shoyu", "tamari", "soy lecithin"],
+    "fish": ["fish", "salmon", "tuna", "cod", "tilapia", "halibut", "anchovy", "sardine", "fish sauce", "worcestershire"],
+    "shellfish": ["shrimp", "crab", "lobster", "clam", "mussel", "oyster", "scallop", "prawn", "krill"]
+}

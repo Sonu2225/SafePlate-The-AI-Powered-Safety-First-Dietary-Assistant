@@ -1,0 +1,28 @@
+name: Safety Gate CI
+
+on: [push, pull_request]
+
+jobs:
+  test-safety:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.9'
+
+    - name: Install Dependencies
+      run: |
+        pip install flask pandas requests
+
+    - name: Build Database (Integration)
+      run: |
+        # We run the setup script to generate the .db file for the test
+        python service_b_data/setup_db.py
+
+    - name: Run Safety Tests
+      run: |
+        python -m unittest tests/test_safety.py

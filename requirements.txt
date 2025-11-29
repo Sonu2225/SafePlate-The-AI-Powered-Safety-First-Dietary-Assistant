@@ -1,9 +1,0 @@
-# 1. For Service A (Auth/UI)
-echo "gradio" > service_a_auth/requirements.txt
-
-# 2. For Service B (Data API)
-echo "flask" > service_b_data/requirements.txt
-
-# 3. For Service C (LLM Orchestrator)
-echo "google-generativeai
-requests" > service_c_llm/requirements.txt

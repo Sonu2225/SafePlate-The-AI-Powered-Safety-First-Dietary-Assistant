@@ -1,14 +1,27 @@
-# Python cache
+# --- EXISTING RULES (Keep these) ---
 __pycache__/
 *.pyc
-
-# Database files
 *.db
 *.sqlite3
-
-# Python virtual environment
 venv/
 .venv/
-
-# macOS files
+.env
 .DS_Store
+node_modules/
+frontend/dist/
+frontend/build/
+
+# Logs (You have 'service_c.log' visible)
+*.log
+
+# Large Datasets 
+service_b_data/recipes.csv
+
+# Testing Caches (Good practice since you have a 'tests' folder)
+.pytest_cache/
+.coverage
+htmlcov/
+
+# OS Garbage files (Windows/Mac)
+Thumbs.db
+._*
