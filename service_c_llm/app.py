@@ -24,7 +24,7 @@ def configure_models():
     try:
         api_key = os.environ.get("GOOGLE_API_KEY")
         if not api_key:
-            print(" CRITICAL: GOOGLE_API_KEY not found in environment!")
+            print("CRITICAL: GOOGLE_API_KEY not found in environment!")
             return False
             
         genai.configure(api_key=api_key)
@@ -32,7 +32,7 @@ def configure_models():
         # Initialize models
         fast_model = genai.GenerativeModel('gemini-2.5-flash')
         smart_model = genai.GenerativeModel('gemini-2.5-pro')
-        print(" Gemini Models Initialized")
+        print("Gemini Models Initialized")
         return True
     except Exception as e:
         print(f" Model Init Error: {e}")
@@ -44,7 +44,17 @@ models_ready = configure_models()
 def get_smart_keywords(user_msg):
     if not fast_model: return user_msg
     try:
-        prompt = f"""TASK: Extract ingredients. REQUEST: "{user_msg}". OUTPUT: Space-separated keywords."""
+        # IMPROVED PROMPT: Translates concepts like "High Protein" into searchable ingredients
+        prompt = f"""
+        TASK: Convert the user's request into a list of specific search ingredients.
+        REQUEST: "{user_msg}"
+        OUTPUT: Space-separated keywords only. No commas.
+        
+        EXAMPLES:
+        - "High Protein" -> chicken beef pork fish tofu beans eggs
+        - "Vegetarian" -> vegetable tofu beans rice pasta
+        - "Italian" -> pasta tomato basil cheese
+        """
         response = fast_model.generate_content(prompt)
         return response.text.strip().replace(",", "")
     except:
@@ -56,11 +66,11 @@ def generate_response():
     user_msg = data.get('message', '')
     history = data.get('history', [])
     profile = data.get('profile', {})
+    
     print(f"[Service C] Processing: '{user_msg}'")
 
     def generate():
         # 1. CRITICAL HEARTBEAT
-        # Keeps connection alive immediately
         yield json.dumps({"text": ""}) + "\n"
 
         # 2. CHECK SETUP
@@ -98,25 +108,29 @@ def generate_response():
         # 4. STREAMING GENERATION
         chat = smart_model.start_chat(history=history)
         
+        # IMPROVED PROMPT: Explicit substitution rules
         system_instruction = f"""
-        ROLE: Expert Culinary Consultant.
+        ROLE: Expert Culinary Consultant (Safety Focused).
         USER PROFILE: Max Calories: {max_cal} | Allergens: {allergens}
         CONTEXT: {recipe_context}
         
         INSTRUCTIONS:
         1. Select the BEST recipe matching "{user_msg}".
         2. SUBSTITUTION: If ingredients conflict with allergies, substitute them.
+           - If Gluten-Free & Soy Sauce found -> Replace with "Tamari".
+           - If Dairy-Free & Butter found -> Replace with "Olive Oil".
+           - If Peanut-Free & Peanut Butter found -> Replace with "Sunflower Butter".
         3. FORMATTING: Use Markdown headers (##) and bullets (*).
         
         REQUIRED FORMAT:
         ## [Recipe Name] ([Calories] cal)
         > *[Description]*
         ### Ingredients
-        * [List]
+        * [List with Substitutions Applied]
         ### Instructions
         1. [Steps]
         ---
-        **Why this fits:** [Explanation]
+        **Safety Check:** [State any substitutions made]
         """
         
         full_prompt = f"{system_instruction}\nUSER MESSAGE: {user_msg}"

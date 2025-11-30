@@ -1,0 +1,26 @@
+# Ignore Git
+.git
+.gitignore
+
+# Ignore Python Environment (
+venv
+.venv
+__pycache__
+*.pyc
+*.pyo
+*.pyd
+
+# Ignore Node Modules 
+frontend/node_modules
+frontend/dist
+frontend/build
+
+# Ignore Databases (Start fresh in Docker)
+*.db
+*.sqlite3
+
+# Ignore Logs
+*.log
+
+# Ignore Environment Variables (Security)
+.env
