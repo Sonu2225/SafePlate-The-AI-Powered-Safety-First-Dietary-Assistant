@@ -77,7 +77,7 @@ def filter_recipes():
             WHERE recipes_fts MATCH ? 
             AND r.calories <= ?
             ORDER BY RANDOM() 
-            LIMIT 50
+            LIMIT 10
             """
             cur.execute(query, (fts_string, int(max_cal)))
         else:
@@ -86,7 +86,7 @@ def filter_recipes():
             FROM recipes 
             WHERE calories <= ? 
             ORDER BY RANDOM() 
-            LIMIT 50
+            LIMIT 10
             """
             cur.execute(query, (int(max_cal),))
             

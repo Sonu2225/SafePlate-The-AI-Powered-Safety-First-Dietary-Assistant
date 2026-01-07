@@ -153,7 +153,7 @@ function App() {
       <div className="w-64 bg-white border-r border-slate-200 flex flex-col shadow-sm">
         <div className="p-6 border-b border-slate-100">
           <h1 className="text-xl font-bold text-emerald-700">
-            RecipeAI
+            SafePlate
           </h1>
           <p className="text-xs text-slate-500 mt-1">Logged in as {user}</p>
         </div>

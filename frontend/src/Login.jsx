@@ -88,7 +88,7 @@ function Login({ onLogin }) {
   return (
     <div className="flex min-h-screen items-center justify-center bg-slate-100 font-sans">
       <div className="w-full max-w-md bg-white p-8 rounded-2xl shadow-xl border border-slate-200">
-        <h2 className="text-3xl font-extrabold text-center text-emerald-600 mb-6">RecipeAI</h2>
+        <h2 className="text-3xl font-extrabold text-center text-emerald-600 mb-6">SafePlate</h2>
         <h3 className="text-xl font-bold mb-4 text-gray-800 border-b pb-2">
           {view === 'login' && 'Log In'}
           {view === 'register' && 'Sign Up'}

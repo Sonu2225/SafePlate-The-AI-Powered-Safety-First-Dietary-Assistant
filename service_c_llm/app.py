@@ -35,7 +35,7 @@ def configure_models():
         print("Gemini Models Initialized")
         return True
     except Exception as e:
-        print(f" Model Init Error: {e}")
+        print(f"Model Init Error: {e}")
         return False
 
 # Initialize on startup
@@ -75,7 +75,7 @@ def generate_response():
 
         # 2. CHECK SETUP
         if not models_ready or not smart_model:
-            yield json.dumps({"text": " System Error: AI models not configured. Check API Key."}) + "\n"
+            yield json.dumps({"text": "System Error: AI models not configured. Check API Key."}) + "\n"
             return
 
         # 3. LOGIC
@@ -105,8 +105,8 @@ def generate_response():
             for r in safe_recipes:
                 recipe_context += f"- {r['name']} ({r['calories']} cal) | Ing: {r['ingredients']} | Instr: {r['instructions']}\n"
 
-        # 4. STREAMING GENERATION
-        chat = smart_model.start_chat(history=history)
+        # 4. STREAMING GENERATION - Use flash model (better free tier quotas)
+        chat = fast_model.start_chat(history=history)
         
         # IMPROVED PROMPT: Explicit substitution rules
         system_instruction = f"""
@@ -141,7 +141,38 @@ def generate_response():
                 if chunk.text:
                     yield json.dumps({"text": chunk.text}) + "\n"
         except Exception as e:
-            yield json.dumps({"text": f"\n **AI Error:** {str(e)}"}) + "\n"
+            error_str = str(e)
+            print(f"LLM Error: {error_str[:200]}")
+            # Check if it's a quota error
+            if "429" in error_str or "quota" in error_str.lower():
+                yield json.dumps({"text": "\n**Note:** AI service quota exceeded. Generating fallback recipe...\n"}) + "\n"
+                # Generate a simple fallback recipe
+                fallback_text = """## High-Protein Egg & Spinach Omelette (350 cal)
+> *A nutritious, high-protein breakfast packed with vitamins and minerals*
+
+### Ingredients
+* 3 large eggs
+* 1 cup fresh spinach
+* 50g cheese (cheddar or feta)
+* 1 tbsp olive oil
+* Salt and pepper to taste
+* Optional: tomatoes, mushrooms
+
+### Instructions
+1. Heat olive oil in a non-stick pan over medium heat
+2. Add spinach and sauté for 1-2 minutes until wilted
+3. Beat eggs with salt and pepper
+4. Pour eggs into the pan over the spinach
+5. Cook for 2-3 minutes until edges are set
+6. Add cheese, then fold omelette in half
+7. Cook for another 1-2 minutes until fully set
+8. Serve immediately with whole grain toast
+
+---
+**Safety Check:** No substitutions needed if you don't have dairy allergies. For dairy-free: use nutritional yeast instead of cheese."""
+                yield json.dumps({"text": fallback_text}) + "\n"
+            else:
+                yield json.dumps({"text": f"\n**AI Error:** {error_str[:150]}"}) + "\n"
 
     # 5. CREATE RESPONSE WITH EXPLICIT CORS HEADERS
     response = Response(stream_with_context(generate()), mimetype='application/x-ndjson')
